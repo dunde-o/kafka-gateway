@@ -13,25 +13,27 @@ spring:
       on-profile: default
   cloud:
     gateway:
-      routes:
-        # "demo-service" 라우트 설정
-        - id: demo-service-route
-          # 목적지(URI)는 demo 실행시 default 주소
-          uri: http://localhost:8090
-          # 조건(Predicates) 설정
-          predicates:
-            # "/demo/**" 패턴의 요청이 들어오면 이 라우트를 적용
-            - Path=/demo/**
-      globalcors:
-          corsConfigurations:
-            '[/**]':
-              allowedOrigins:
-                - "*"
-              allowedMethods:
-                - "*"
-              allowedHeaders:
-                - "*"
-              allowCredentials: true
+      server:
+        webflux:
+          routes:
+            # "demo-service" 라우트 설정
+            - id: demo-service-route
+              # 목적지(URI)는 demo 실행시 default 주소
+              uri: http://localhost:8090
+              # 조건(Predicates) 설정
+              predicates:
+                # "/demo/**" 패턴의 요청이 들어오면 이 라우트를 적용
+                - Path=/demo/**
+          globalcors:
+              corsConfigurations:
+                '[/**]':
+                  allowedOrigins:
+                    - "http://localhost:*"  # allowCredentials가 true일 때는 와일드카드(*)를 사용할 수 없음
+                  allowedMethods:
+                    - "*"
+                  allowedHeaders:
+                    - "*"
+                  allowCredentials: true
 
 ---
 
@@ -41,22 +43,24 @@ spring:
       on-profile: docker
   cloud:
     gateway:
-      routes:
-        # "demo-service" 라우트 설정
-        - id: demo-service-route
-          # 목적지(URI)는 demo-service의 주소(docker NAME)
-          uri: http://demo-service:8080
-          # 조건(Predicates) 설정
-          predicates:
-            # "/demo/**" 패턴의 요청이 들어오면 이 라우트를 적용
-            - Path=/demo/**
-      globalcors:
-          corsConfigurations:
-            '[/**]':
-              allowedOrigins:
-                - "*"
-              allowedMethods:
-                - "*"
-              allowedHeaders:
-                - "*"
-              allowCredentials: true
+      server:
+        webflux:
+          routes:
+            # "demo-service" 라우트 설정
+            - id: demo-service-route
+              # 목적지(URI)는 demo-service의 주소(docker NAME)
+              uri: http://demo-service:8080
+              # 조건(Predicates) 설정
+              predicates:
+                # "/demo/**" 패턴의 요청이 들어오면 이 라우트를 적용
+                - Path=/demo/**
+          globalcors:
+              corsConfigurations:
+                '[/**]':
+                  allowedOrigins:
+                    - "http://localhost:*"  # allowCredentials가 true일 때는 와일드카드(*)를 사용할 수 없음
+                  allowedMethods:
+                    - "*"
+                  allowedHeaders:
+                    - "*"
+                  allowCredentials: true
