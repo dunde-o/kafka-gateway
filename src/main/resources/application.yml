@@ -1,9 +1,44 @@
-server:
-  port: 8080
-
 spring:
   application:
     name: gateway
+
+server:
+  port: 8080
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: default
+  cloud:
+    gateway:
+      routes:
+        # "demo-service" 라우트 설정
+        - id: demo-service-route
+          # 목적지(URI)는 demo 실행시 default 주소
+          uri: http://localhost:8090
+          # 조건(Predicates) 설정
+          predicates:
+            # "/demo/**" 패턴의 요청이 들어오면 이 라우트를 적용
+            - Path=/demo/**
+      globalcors:
+          corsConfigurations:
+            '[/**]':
+              allowedOrigins:
+                - "*"
+              allowedMethods:
+                - "*"
+              allowedHeaders:
+                - "*"
+              allowCredentials: true
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: docker
   cloud:
     gateway:
       routes:
@@ -15,3 +50,13 @@ spring:
           predicates:
             # "/demo/**" 패턴의 요청이 들어오면 이 라우트를 적용
             - Path=/demo/**
+      globalcors:
+          corsConfigurations:
+            '[/**]':
+              allowedOrigins:
+                - "*"
+              allowedMethods:
+                - "*"
+              allowedHeaders:
+                - "*"
+              allowCredentials: true
