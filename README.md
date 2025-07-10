@@ -71,18 +71,34 @@ az aks get-credentials --resource-group <마이크로소프트 리소스 그룹>
 ## 쿠버네티스 설정 실행
 
 ```
-kubectl apply -f kubernetes/gateway.yml
+bash scripts/kube-run.sh <DOCKER HUB ID>
 ```
 
 - 각 설정에 따라 `kubernetes/gateway.yml` 을 수정해주세요.
 - image 는 docker hub에 올린 이미지 사용 (기본: `chldlsrb1000/gateway:latest`)
 
 ```
+# 이 명령어는 kube-run.sh 에 포함되어 있습니다.
 kubectl apply -f kubernetes/kafka.yml
 kubectl apply -f kubernetes/kafka-ui.yml
 ```
 
 - 기본 설정이 되어있는 kafka, kafka-ui 를 추가합니다.
+
+```
+# 이 명령어는 kube-run.sh 에 포함되어 있습니다.
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
+```
+
+- kubernetes 의 ingress 설정을 추가합니다.
+
+```
+kubectl get ingress
+kubectl get svc -n ingress-nginx
+kubectl describe svc ingress-nginx-controller -n ingress-nginx
+```
+
+- 위 명령어들로 ingress 상태를 확인하세요.
 
 ### 추가 명령어
 

@@ -23,6 +23,9 @@ spec:
         # ✅ 카프카 접속 주소를 쿠버네티스 서비스 이름(kafka-svc)으로 변경
         - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
           value: "kafka-svc:9092"
+        # ingress 경로 추가
+        - name: SERVER_SERVLET_CONTEXT_PATH
+          value: /kafka-ui
 
 ---
 
@@ -31,11 +34,9 @@ kind: Service
 metadata:
   name: kafka-ui-svc
 spec:
-  type: NodePort
+  type: ClusterIP 
   ports:
     - port: 8082 # 외부에서 접근할 포트
       targetPort: 8080 # 컨테이너 내부 포트
-      nodePort: 30093
   selector:
     app: kafka-ui
-  type: LoadBalancer

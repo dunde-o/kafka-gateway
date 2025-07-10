@@ -82,8 +82,11 @@ spring:
               uri: lb://demo-svc:8080
               # 조건(Predicates) 설정
               predicates:
-                # "/demo/**" 패턴의 요청이 들어오면 이 라우트를 적용
-                - Path=/demo/**
+                # "/api/demo/**" 패턴의 요청이 들어오면 이 라우트를 적용, 이후 요청 경로에서 "/api" 제거
+                - Path=/api/demo/**
+              filters:
+                - StripPrefix=1
+
           globalcors:
               corsConfigurations:
                 '[/**]':

@@ -33,12 +33,12 @@ metadata:
   labels:
     app: gateway
 spec:
+  type: ClusterIP
   ports:
     - port: 8080
       targetPort: 8080
   selector:
     app: gateway
-  type: LoadBalancer
 
 ---
 
