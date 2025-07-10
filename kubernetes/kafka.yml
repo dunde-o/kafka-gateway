@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+spec:
+  serviceName: "kafka-headless" # 위 헤드리스 서비스와 연결
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+      - name: kafka
+        image: confluentinc/cp-kafka:latest
+        ports:
+        - containerPort: 9092
+        - containerPort: 29092
+        - containerPort: 29093
+        env:
+        - name: KAFKA_NODE_ID
+          value: "1"
+        - name: KAFKA_PROCESS_ROLES
+          value: "broker,controller"
+        # ✅ Pod의 고유 주소(kafka-0.kafka-headless)를 사용하도록 변경
+        - name: KAFKA_CONTROLLER_QUORUM_VOTERS
+          value: "1@kafka-0.kafka-headless:29093"
+        # ✅ 리스너의 호스트를 0.0.0.0으로 열어줌
+        - name: KAFKA_LISTENERS
+          value: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:29093,EXTERNAL://0.0.0.0:29092"
+        # ✅ 외부/내부 접속 주소를 쿠버네티스 서비스 이름으로 광고
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: "PLAINTEXT://kafka-svc:9092,EXTERNAL://localhost:29092"
+        - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+          value: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT"
+        - name: KAFKA_CONTROLLER_LISTENER_NAMES
+          value: "CONTROLLER"
+        - name: KAFKA_INTER_BROKER_LISTENER_NAME
+          value: "PLAINTEXT"
+        - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+          value: "1"
+        - name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+          value: "1"
+        - name: CLUSTER_ID
+          value: "QulrIgVST7SxIHoZGCxJ2w"
+        - name: KAFKA_LOG_DIRS
+          value: "/tmp/kraft-combined-logs"
+
+---
+
+# 클러스터 내부 및 외부 접근을 위한 서비스
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-svc
+spec:
+  type: NodePort # 외부 노출을 위해 NodePort 사용 (클라우드 환경에서는 LoadBalancer 사용 가능)
+  ports:
+    - name: internal
+      port: 9092
+      targetPort: 9092
+    - name: external
+      port: 29092
+      targetPort: 29092
+      nodePort: 30092 # NodePort를 통해 외부에서 접근할 포트
+  selector:
+    app: kafka
+
+---
+
+# StatefulSet의 Pod들에게 고유 DNS를 부여하기 위한 헤드리스 서비스
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-headless
+spec:
+  clusterIP: None # 헤드리스 서비스로 설정
+  ports:
+    - name: controller
+      port: 29093
+      targetPort: 29093
+  selector:
+    app: kafka

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-ui
+  template:
+    metadata:
+      labels:
+        app: kafka-ui
+    spec:
+      containers:
+      - name: kafka-ui
+        image: provectuslabs/kafka-ui:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: KAFKA_CLUSTERS_0_NAME
+          value: "local-k8s"
+        # ✅ 카프카 접속 주소를 쿠버네티스 서비스 이름(kafka-svc)으로 변경
+        - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+          value: "kafka-svc:9092"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-ui-svc
+spec:
+  type: NodePort
+  ports:
+    - port: 8082 # 외부에서 접근할 포트
+      targetPort: 8080 # 컨테이너 내부 포트
+      nodePort: 30093
+  selector:
+    app: kafka-ui
+  type: LoadBalancer
