@@ -111,4 +111,8 @@ kubectl get all
 
 # 로그확인(-f: 실시간 옵션)
 kubectl logs <POD NAME>
+
+# 바로 재반영
+kubectl get deployment  # 확인
+kubectl rollout restart deployment/gateway  # 재반영
 ```
