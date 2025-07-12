@@ -58,12 +58,12 @@ spring:
               corsConfigurations:
                 '[/**]':
                   allowedOrigins:
-                    - "http://localhost:*"  # allowCredentials가 true일 때는 와일드카드(*)를 사용할 수 없음
+                    - "*"  # allowCredentials가 true일 때는 와일드카드(*)를 사용할 수 없음
                   allowedMethods:
                     - "*"
                   allowedHeaders:
                     - "*"
-                  allowCredentials: true
+                  allowCredentials: false
 
 ---
 

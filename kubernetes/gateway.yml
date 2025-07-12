@@ -17,7 +17,7 @@ spec:
       serviceAccountName: gateway-sa
       containers:
         - name: gateway
-          image: chldlsrb1000/gateway:latest
+          image: chldlsrb1000/gateway:latest  # Docker Hub 사용자명과 서비스이름을 입력해주세요.
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "kubernetes" 
