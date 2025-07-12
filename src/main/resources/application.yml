@@ -24,6 +24,10 @@ spring:
               predicates:
                 # "/demo/**" 패턴의 요청이 들어오면 이 라우트를 적용
                 - Path=/demo/**
+            - id: python-service-route
+              uri: http://localhost:8091
+              predicates:
+                - Path=/python/**
           globalcors:
               corsConfigurations:
                 '[/**]':
@@ -54,6 +58,10 @@ spring:
               predicates:
                 # "/demo/**" 패턴의 요청이 들어오면 이 라우트를 적용
                 - Path=/demo/**
+            - id: python-service-route
+              uri: http://python-service:5001
+              predicates:
+                - Path=/python/**
           globalcors:
               corsConfigurations:
                 '[/**]':
@@ -84,6 +92,12 @@ spring:
               predicates:
                 # "/api/demo/**" 패턴의 요청이 들어오면 이 라우트를 적용, 이후 요청 경로에서 "/api" 제거
                 - Path=/api/demo/**
+              filters:
+                - StripPrefix=1
+            - id: python-service-route
+              uri: lb://python-svc:5001
+              predicates:
+                - Path=/api/python/**
               filters:
                 - StripPrefix=1
 
